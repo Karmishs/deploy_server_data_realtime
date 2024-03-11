@@ -2,11 +2,8 @@ import requests
 import json
 import os
 from datetime import datetime
-<<<<<<< HEAD
-=======
 import schedule
 import time
->>>>>>> master
 
 def get_distance_data(origin, destination, api_key):
     url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={destination}&departure_time=now&key={api_key}"
@@ -62,7 +59,15 @@ api_key = 'AIzaSyDg16DHjytKsi4JxUoZpQHMtbaxKxNpL1A'
 origin = "10.792786,106.653508"
 destination = "10.771566,106.693125"
 
-data = get_distance_data(origin, destination, api_key)
-result = analyze_traffic(data)
+def job():
+    # Thực hiện lấy dữ liệu và lưu trữ
+    data = get_distance_data(origin, destination, api_key)
+    result = analyze_traffic(data)
+    save_data(result)
 
-save_data(result)
+schedule.every(15).minutes.do(job)
+
+# Vòng lặp chạy vô hạn để duy trì lập lịch
+while True:
+    schedule.run_pending()
+    time.sleep(1)
