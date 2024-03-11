@@ -55,7 +55,6 @@ def save_data(result):
 
     print("Data saved successfully.")
 
-<<<<<<< HEAD
 # Thay thế 'YOUR_API_KEY' bằng API key của bạn
 api_key = 'AIzaSyDg16DHjytKsi4JxUoZpQHMtbaxKxNpL1A'
 # origin = 'Bùng Binh Phù Đổng'
@@ -67,25 +66,3 @@ data = get_distance_data(origin, destination, api_key)
 result = analyze_traffic(data)
 
 save_data(result)
-=======
-api_key = 'AIzaSyDg16DHjytKsi4JxUoZpQHMtbaxKxNpL1A'
-# origin = 'Bùng Binh Phù Đổng'
-# destination = '[10.792811, 106.653452]'
-origin = "10.792786,106.653508"
-destination = "10.771566,106.693125"
-
-def job():
-    # Thực hiện lấy dữ liệu và lưu trữ
-    data = get_distance_data(origin, destination, api_key)
-    result = analyze_traffic(data)
-    save_data(result)
-
-
-# Lập lịch cho công việc chạy mỗi 15 phút
-schedule.every(15).minutes.do(job)
-
-# Vòng lặp chạy vô hạn để duy trì lập lịch
-while True:
-    schedule.run_pending()
-    time.sleep(30)
->>>>>>> master
