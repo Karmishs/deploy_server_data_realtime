@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import schedule
 import time
+import pytz
 
 def get_distance_data(origin, destination, api_key):
     url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={destination}&departure_time=now&key={api_key}"
@@ -30,20 +31,37 @@ def analyze_traffic(data):
         result['duration'] = duration
         result['duration_in_traffic'] = duration_in_traffic
         result['traffic'] = traffic
+        
+        gmt7 = pytz.timezone('Asia/Ho_Chi_Minh')
+
+        # Lấy thời gian hiện tại theo múi giờ GMT+7
+        current_time_gmt7 = datetime.now(gmt7)
+
+        # Format thời gian lấy dữ liệu thành chuỗi
+        current_time_str = current_time_gmt7.strftime('%H-%M-%S')
+        result['timestamp'] = current_time_str
     else:
         print("Failed to fetch data.")
     return result
 
 
 def save_data(result):
+    # Tạo đối tượng múi giờ cho múi giờ GMT+7
+    gmt7 = pytz.timezone('Asia/Ho_Chi_Minh')
+
+    # Lấy thời gian hiện tại theo múi giờ GMT+7
+    current_time_gmt7 = datetime.now(gmt7)
+
+    # Format thời gian lấy dữ liệu thành chuỗi
+    current_time_str = current_time_gmt7.strftime('%H-%M-%S')
+
     # Tạo thư mục dựa trên ngày lấy dữ liệu
-    current_date = datetime.now().strftime('%Y-%m-%d')
+    current_date = current_time_gmt7.strftime('%Y-%m-%d')
     folder_path = os.path.join('traffic_data', current_date)
     os.makedirs(folder_path, exist_ok=True)
 
     # Tạo tên tệp tin dựa trên thời gian lấy dữ liệu
-    current_time = datetime.now().strftime('%H-%M-%S')
-    file_name = f"{current_time}.json"
+    file_name = f"{current_time_str}.json"
     file_path = os.path.join(folder_path, file_name)
 
     # Lưu dữ liệu vào tệp tin JSON
@@ -66,9 +84,12 @@ def job():
 
 
 # Lập lịch cho công việc chạy mỗi 15 phút
-schedule.every(15).minutes.do(job)
+schedule.every().hour.at(':00').do(job)
+schedule.every().hour.at(':15').do(job)
+schedule.every().hour.at(':30').do(job)
+schedule.every().hour.at(':45').do(job)
 
 # Vòng lặp chạy vô hạn để duy trì lập lịch
 while True:
     schedule.run_pending()
-    time.sleep(30)
+    time.sleep(15)
